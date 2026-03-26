@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "*.blade.php": "blade"
+    },
+    "emmet.includeLanguages": {
+        "blade": "html"
+    },
+    "intelephense.files.exclude": [
+        "**/*.blade.php"
+    ],
+    "php.problems.exclude": {
+        "**/*.blade.php": [2014]
+    }
+}

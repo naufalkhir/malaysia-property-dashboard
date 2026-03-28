@@ -1,0 +1,67 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: realty_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  laravel-api:
+    build:
+      context: ./laravel-api
+      dockerfile: Dockerfile.prod
+    container_name: realty_laravel
+    restart: always
+    env_file: ./laravel-api/.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal
+      - public
+
+  python-service:
+    build:
+      context: ./python-service
+      dockerfile: Dockerfile.prod
+    container_name: realty_python
+    restart: always
+    env_file: ./python-service/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal
+
+  nuxt-frontend:
+    build:
+      context: ./nuxt-frontend
+      dockerfile: Dockerfile.prod
+    container_name: realty_nuxt
+    restart: always
+    ports:
+      - "3000:3000"
+    networks:
+      - public
+
+volumes:
+  postgres_data:
+
+networks:
+  internal:
+    driver: bridge
+  public:
+    driver: bridge

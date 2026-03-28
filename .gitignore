@@ -1,0 +1,25 @@
+.env
+.env.*.local
+
+# Laravel
+laravel-api/vendor/
+laravel-api/node_modules/
+laravel-api/.env
+
+# Python
+python-service/__pycache__/
+python-service/venv/
+python-service/*.pkl
+python-service/.env
+
+# Nuxt
+nuxt-frontend/node_modules/
+nuxt-frontend/.output/
+nuxt-frontend/.env
+
+# GeoJSON cache
+*.geojson
+
+# OS
+.DS_Store
+Thumbs.db

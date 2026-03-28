@@ -14,7 +14,9 @@ A full-stack property analytics platform combining real Malaysian real estate li
 
 ## 📸 Screenshots
 
-> *(Add screenshots here after deployment — listings page, map, prediction form)*
+![Homepage](screenshots/homepage.png)
+![Listings](screenshots/listings.png)
+![Dashboard](screenshots/dashboard.png)
 
 ---
 

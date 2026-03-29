@@ -50,6 +50,8 @@ services:
     build:
       context: ./nuxt-frontend
       dockerfile: Dockerfile.prod
+      args:
+        NUXT_PUBLIC_API_BASE: https://propertyanalytics.naufaldev.cloud
     container_name: realty_nuxt
     restart: always
     ports:

@@ -625,6 +625,7 @@
 import { ref, computed } from "vue";
 import { useHead, useRuntimeConfig } from "#app";
 
+
 useHead({ title: "Price Prediction" });
 
 const config = useRuntimeConfig();

@@ -16,9 +16,9 @@ class PredictionInput(BaseModel):
 
 
 BASE_DIR = os.path.dirname(__file__)
-MODEL_PATH = os.path.join(BASE_DIR, "../price_model.pkl")
-FEATURES_PATH = os.path.join(BASE_DIR, "../model_features.pkl")
-INCOME_DATA_PATH = os.path.join(BASE_DIR, "../../hh_income_state.csv")
+MODEL_PATH = os.path.join(BASE_DIR, "../models/price_model.pkl")
+FEATURES_PATH = os.path.join(BASE_DIR, "../models/model_features.pkl")
+INCOME_DATA_PATH = os.path.join(BASE_DIR, "../models/hh_income_state.csv")
 
 model = None
 feature_columns = None

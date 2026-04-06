@@ -242,6 +242,7 @@
               </select>
             </div>
 
+            <!-- FIX 1: Size input — added background: white -->
             <div>
               <label
                 style="
@@ -266,6 +267,7 @@
                   border-radius: 0.5rem;
                   font-size: 1rem;
                   color: #1e293b;
+                  background: white;
                   box-sizing: border-box;
                 "
               />
@@ -274,6 +276,7 @@
             <div
               style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem"
             >
+              <!-- FIX 2: Bedrooms input — added background: white -->
               <div>
                 <label
                   style="
@@ -300,10 +303,12 @@
                     border-radius: 0.5rem;
                     font-size: 1rem;
                     color: #1e293b;
+                    background: white;
                     box-sizing: border-box;
                   "
                 />
               </div>
+              <!-- FIX 3: Bathrooms input — added background: white -->
               <div>
                 <label
                   style="
@@ -330,6 +335,7 @@
                     border-radius: 0.5rem;
                     font-size: 1rem;
                     color: #1e293b;
+                    background: white;
                     box-sizing: border-box;
                   "
                 />
@@ -625,7 +631,6 @@
 import { ref, computed } from "vue";
 import { useHead, useRuntimeConfig } from "#app";
 
-
 useHead({ title: "Price Prediction" });
 
 const config = useRuntimeConfig();
@@ -664,7 +669,6 @@ const states = [
   "Putrajaya",
 ];
 
-// Only enable button when required fields are filled (updated to include size and bedrooms)
 const isFormValid = computed(() => {
   return (
     form.value.state &&
@@ -680,7 +684,6 @@ const predict = async () => {
   error.value = null;
 
   try {
-    // Send only what the API currently expects
     const payload = {
       state: form.value.state,
       property_type: form.value.property_type,

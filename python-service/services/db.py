@@ -29,12 +29,15 @@ else:
 engine = create_engine(DB_URL)
 
 
-def query_df(sql: str) -> pd.DataFrame:
+def query_df(sql: str, params: dict | None = None) -> pd.DataFrame:
     """
     Run a raw SQL query and return results as a pandas DataFrame.
     DataFrame is like a spreadsheet in Python — rows and columns.
     We use this everywhere to manipulate data before sending to frontend.
+
+    params: optional dict of named parameters, e.g. {"state": "Selangor"}
+    In SQL, reference them as :state — SQLAlchemy replaces safely (no SQL injection)
     """
     with engine.connect() as conn:
         # text() wraps the SQL string so SQLAlchemy handles it safely
-        return pd.read_sql(text(sql), conn)
+        return pd.read_sql(text(sql), conn, params=params)

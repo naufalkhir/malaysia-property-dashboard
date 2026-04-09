@@ -81,7 +81,7 @@
               <div class="card-icon-wrap blue">📈</div>
               <div>
                 <div class="card-title">Price Trend</div>
-                <div class="card-sub">{{ selectedState }} · Avg. over time</div>
+                <div class="card-sub">{{ selectedState }} - Avg. over time</div>
               </div>
             </div>
             <div v-if="loadingTrend" class="skeleton-chart"></div>
@@ -98,7 +98,7 @@
               <div class="card-icon-wrap violet">📊</div>
               <div>
                 <div class="card-title">Price Distribution</div>
-                <div class="card-sub">All states · Frequency histogram</div>
+                <div class="card-sub">All states - Frequency histogram</div>
               </div>
             </div>
             <div v-if="loadingDist" class="skeleton-chart"></div>
@@ -114,7 +114,7 @@
               <div class="card-icon-wrap amber">📦</div>
               <div>
                 <div class="card-title">Price per Sqft</div>
-                <div class="card-sub">By state · Box plot spread</div>
+                <div class="card-sub">By state - Box plot spread</div>
               </div>
             </div>
             <div v-if="loadingPsf" class="skeleton-chart"></div>
@@ -127,7 +127,7 @@
               <div class="card-icon-wrap green">🥧</div>
               <div>
                 <div class="card-title">Property Types</div>
-                <div class="card-sub">All states · Market share</div>
+                <div class="card-sub">All states - Market share</div>
               </div>
             </div>
             <div v-if="loadingType" class="skeleton-chart"></div>
@@ -142,7 +142,7 @@
             <div>
               <div class="card-title">Affordability Ratio by State</div>
               <div class="card-sub">
-                Higher = less affordable · Based on median income vs. median
+                Higher = less affordable - Based on median income vs. median
                 price
               </div>
             </div>
@@ -165,7 +165,7 @@ import { ref, onMounted, nextTick } from "vue";
 import { useHead, useRuntimeConfig } from "#app";
 
 useHead({
-  title: "Analytics — Malaysia Realty",
+  title: "Analytics - Malaysia Realty",
   link: [
     { rel: "preconnect", href: "https://fonts.googleapis.com" },
     { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" },
@@ -277,21 +277,21 @@ const fetchCharts = async () => {
       $fetch(`${apiBase}/api/analytics/affordability-bar`).catch(() => null),
     ]);
 
+    // Set ALL loading flags to false first
+    loadingTrend.value = false;
+    loadingDist.value = false;
+    loadingPsf.value = false;
+    loadingType.value = false;
+    loadingAfford.value = false;
+
+    // THEN wait for Vue to remove all display:none from chart divs
     await nextTick();
 
-    loadingTrend.value = false;
+    // NOW render — elements are visible so Plotly can measure their dimensions
     if (trend) renderChart(trendChart.value, trend);
-
-    loadingDist.value = false;
     if (dist) renderChart(distChart.value, dist);
-
-    loadingPsf.value = false;
     if (psf) renderChart(psfChart.value, psf);
-
-    loadingType.value = false;
     if (type) renderChart(typeChart.value, type);
-
-    loadingAfford.value = false;
     if (afford) renderChart(affordChart.value, afford);
   } catch (err) {
     console.error("Fetch failed:", err);

@@ -1,5 +1,5 @@
 <template>
-  <div style="min-height: 100vh; background: #f1f5f9">
+  <div style="min-height: 100vh; background: #f1f5f9; width: 100%; box-sizing: border-box;">
     <!-- Navbar -->
     <nav
       style="

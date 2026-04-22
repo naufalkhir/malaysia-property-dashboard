@@ -69,13 +69,13 @@
               font-weight: 700;
               font-size: 0.95rem;
             "
-            >Try Prediction →</NuxtLink
+            >Try Prediction -></NuxtLink
           >
         </div>
       </div>
     </nav>
 
-    <div style="max-width: 1280px; margin: 0 auto; padding: 2.5rem 1.5rem">
+    <div style="max-width: 1280px; margin: 0 auto; padding: 2.5rem 1.5rem; width: 100%">
       <!-- Page Header -->
       <div style="margin-bottom: 2rem">
         <h1
@@ -102,6 +102,8 @@
           margin-bottom: 2rem;
           box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
           border: 1px solid #e2e8f0;
+          width: 100%;
+          box-sizing: border-box;
         "
       >
         <div
@@ -134,6 +136,7 @@
                 font-size: 1rem;
                 color: #1e293b;
                 background: white;
+                box-sizing: border-box;
               "
             >
               <option value="">All States</option>
@@ -165,6 +168,7 @@
                 font-size: 1rem;
                 color: #1e293b;
                 background: white;
+                box-sizing: border-box;
               "
             >
               <option value="">All Types</option>
@@ -198,6 +202,7 @@
                 font-size: 1rem;
                 color: #1e293b;
                 background: white;
+                box-sizing: border-box;
               "
             >
               <option value="">Any</option>
@@ -231,6 +236,7 @@
                 border-radius: 0.5rem;
                 font-size: 1rem;
                 color: #1e293b;
+                box-sizing: border-box;
               "
             />
           </div>
@@ -258,6 +264,7 @@
                 border-radius: 0.5rem;
                 font-size: 1rem;
                 color: #1e293b;
+                box-sizing: border-box;
               "
             />
           </div>
@@ -283,7 +290,7 @@
               font-size: 1rem;
             "
           >
-            🔍 Search
+            Search
           </button>
           <button
             @click="resetFilters"
@@ -349,13 +356,15 @@
         </p>
       </div>
 
-      <!-- Property Grid -->
+      <!-- Property Grid — fixed: width 100% + box-sizing so it fills the container properly -->
       <div
         v-else
         style="
           display: grid;
           grid-template-columns: repeat(3, 1fr);
           gap: 1.75rem;
+          width: 100%;
+          box-sizing: border-box;
         "
       >
         <NuxtLink
@@ -372,12 +381,14 @@
               border: 1px solid #e2e8f0;
               box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
               cursor: pointer;
+              transition: box-shadow 0.2s, transform 0.2s;
             "
+            @mouseenter="e => e.currentTarget.style.cssText += 'box-shadow: 0 8px 24px rgba(0,0,0,0.1); transform: translateY(-2px);'"
+            @mouseleave="e => e.currentTarget.style.cssText += 'box-shadow: 0 1px 4px rgba(0,0,0,0.06); transform: translateY(0);'"
           >
-            <!-- Image placeholder -->
+            <!-- Image placeholder with property-type color -->
             <div
               style="
-                background: linear-gradient(135deg, #dbeafe 0%, #ede9fe 100%);
                 height: 200px;
                 display: flex;
                 align-items: center;
@@ -385,8 +396,9 @@
                 font-size: 4rem;
                 position: relative;
               "
+              :style="{ background: cardGradient(property.property_type) }"
             >
-              🏠
+              {{ cardIcon(property.property_type) }}
               <span
                 style="
                   position: absolute;
@@ -400,7 +412,7 @@
                   color: #2563eb;
                 "
               >
-                {{ property.property_type }}
+                {{ simplifyType(property.property_type) }}
               </span>
             </div>
             <div style="padding: 1.5rem">
@@ -444,15 +456,7 @@
               >
                 <span>🛏 {{ property.bedrooms ?? "-" }} bed</span>
                 <span>🚿 {{ property.bathrooms ?? "-" }} bath</span>
-                <span
-                  >📐
-                  {{
-                    property.size_sqft
-                      ? property.size_sqft.toLocaleString()
-                      : "-"
-                  }}
-                  sqft</span
-                >
+                <span>📐 {{ property.size_sqft ? Number(property.size_sqft).toLocaleString() : "-" }} sqft</span>
               </div>
             </div>
           </div>
@@ -484,7 +488,7 @@
             font-size: 1rem;
           "
         >
-          ← Prev
+          Prev
         </button>
         <span style="padding: 0.75rem 1rem; color: #64748b; font-size: 1rem">
           Page {{ pagination.current_page }} of {{ pagination.last_page }}
@@ -503,7 +507,7 @@
             font-size: 1rem;
           "
         >
-          Next →
+          Next
         </button>
       </div>
     </div>
@@ -556,6 +560,40 @@ const states = [
 ];
 
 const formatPrice = (price) => Number(price).toLocaleString("en-MY");
+
+// Simplify messy property type strings for the badge
+const simplifyType = (t) => {
+  const s = (t || "").toLowerCase();
+  if (s.includes("condominium") || s.includes("service residence") || s.includes("apartment") || s.includes("flat")) return "Condo/Apt";
+  if (s.includes("terrace") || s.includes("link") || s.includes("town house")) return "Terrace";
+  if (s.includes("semi d") || s.includes("cluster")) return "Semi-D";
+  if (s.includes("bungalow") || s.includes("villa")) return "Bungalow";
+  return t?.split(" ").slice(0, 2).join(" ") || "Property";
+};
+
+// Different gradient per property category — makes cards visually distinct
+const cardGradient = (t) => {
+  const s = (t || "").toLowerCase();
+  if (s.includes("condominium") || s.includes("apartment") || s.includes("service residence") || s.includes("flat"))
+    return "linear-gradient(135deg, #dbeafe 0%, #ede9fe 100%)";
+  if (s.includes("terrace") || s.includes("link"))
+    return "linear-gradient(135deg, #dcfce7 0%, #d1fae5 100%)";
+  if (s.includes("semi d") || s.includes("cluster"))
+    return "linear-gradient(135deg, #fef9c3 0%, #fde68a 100%)";
+  if (s.includes("bungalow") || s.includes("villa"))
+    return "linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)";
+  return "linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)";
+};
+
+// Different emoji per property category
+const cardIcon = (t) => {
+  const s = (t || "").toLowerCase();
+  if (s.includes("condominium") || s.includes("apartment") || s.includes("service residence") || s.includes("flat")) return "🏢";
+  if (s.includes("terrace") || s.includes("link")) return "🏘";
+  if (s.includes("semi d") || s.includes("cluster")) return "🏡";
+  if (s.includes("bungalow") || s.includes("villa")) return "🏰";
+  return "🏠";
+};
 
 const fetchProperties = async (page = 1) => {
   loading.value = true;

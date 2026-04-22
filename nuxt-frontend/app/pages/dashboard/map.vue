@@ -69,7 +69,7 @@
               font-weight: 700;
               font-size: 0.95rem;
             "
-            >Try Prediction →</NuxtLink
+            >Try Prediction -></NuxtLink
           >
         </div>
       </div>
@@ -183,7 +183,7 @@
             margin-bottom: 1.5rem;
           "
         >
-          📍 Property Density by State
+          Property Density by State
         </h2>
         <div
           v-if="stateData.length > 0"
@@ -222,7 +222,7 @@
           </div>
         </div>
         <div v-else style="text-align: center; padding: 2rem; color: #64748b">
-          <p>No data yet — import your CSV to see state stats here.</p>
+          <p>No data yet - import your CSV to see state stats here.</p>
         </div>
       </div>
     </div>
@@ -245,7 +245,6 @@ const MALAYSIA_ZOOM = 6;
 const initMap = async () => {
   if (!mapContainer.value) return;
 
-  // Now works correctly because we changed exclude to include in nuxt.config.ts
   const L = await import("leaflet");
 
   delete L.Icon.Default.prototype._getIconUrl;
@@ -258,10 +257,34 @@ const initMap = async () => {
 
   map = L.map(mapContainer.value).setView(MALAYSIA_CENTER, MALAYSIA_ZOOM);
 
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "© OpenStreetMap contributors",
-    maxZoom: 18,
-  }).addTo(map);
+  // Street layer
+  const streetLayer = L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+      attribution: "© OpenStreetMap contributors",
+      maxZoom: 18,
+    },
+  );
+
+  // Satellite layer (ESRI — free, no API key needed)
+  const satelliteLayer = L.tileLayer(
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    {
+      attribution: "Tiles &copy; Esri",
+      maxZoom: 18,
+    },
+  );
+
+  // Start with satellite
+  satelliteLayer.addTo(map);
+
+  // Layer switcher — top right corner
+  L.control
+    .layers({
+      Street: streetLayer,
+      Satellite: satelliteLayer,
+    })
+    .addTo(map);
 
   try {
     const states = await $fetch(`${apiBase}/api/analytics/map/choropleth`);
@@ -292,10 +315,10 @@ const initMap = async () => {
       const marker = L.circleMarker(coords, {
         radius: Math.min(30, Math.max(8, state.listing_count / 100)),
         fillColor: "#2563eb",
-        color: "#1d4ed8",
+        color: "#ffffff",
         weight: 2,
         opacity: 1,
-        fillOpacity: 0.6,
+        fillOpacity: 0.75,
       }).addTo(map);
 
       marker.bindPopup(`

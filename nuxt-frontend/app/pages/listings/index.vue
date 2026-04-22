@@ -1,5 +1,12 @@
 <template>
-  <div style="min-height: 100vh; background: #f1f5f9; width: 100%; box-sizing: border-box;">
+  <div
+    style="
+      min-height: 100vh;
+      background: #f1f5f9;
+      width: 100%;
+      box-sizing: border-box;
+    "
+  >
     <!-- Navbar -->
     <nav
       style="
@@ -75,7 +82,15 @@
       </div>
     </nav>
 
-    <div style="max-width: 1280px; margin: 0 auto; padding: 2.5rem 1.5rem; width: 100%">
+    <div
+      style="
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2.5rem 2rem;
+        width: 100%;
+        box-sizing: border-box;
+      "
+    >
       <!-- Page Header -->
       <div style="margin-bottom: 2rem">
         <h1
@@ -361,7 +376,7 @@
         v-else
         style="
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
+          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
           gap: 1.75rem;
           width: 100%;
           box-sizing: border-box;
@@ -381,10 +396,20 @@
               border: 1px solid #e2e8f0;
               box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
               cursor: pointer;
-              transition: box-shadow 0.2s, transform 0.2s;
+              transition:
+                box-shadow 0.2s,
+                transform 0.2s;
             "
-            @mouseenter="e => e.currentTarget.style.cssText += 'box-shadow: 0 8px 24px rgba(0,0,0,0.1); transform: translateY(-2px);'"
-            @mouseleave="e => e.currentTarget.style.cssText += 'box-shadow: 0 1px 4px rgba(0,0,0,0.06); transform: translateY(0);'"
+            @mouseenter="
+              (e) =>
+                (e.currentTarget.style.cssText +=
+                  'box-shadow: 0 8px 24px rgba(0,0,0,0.1); transform: translateY(-2px);')
+            "
+            @mouseleave="
+              (e) =>
+                (e.currentTarget.style.cssText +=
+                  'box-shadow: 0 1px 4px rgba(0,0,0,0.06); transform: translateY(0);')
+            "
           >
             <!-- Image placeholder with property-type color -->
             <div
@@ -456,7 +481,15 @@
               >
                 <span>🛏 {{ property.bedrooms ?? "-" }} bed</span>
                 <span>🚿 {{ property.bathrooms ?? "-" }} bath</span>
-                <span>📐 {{ property.size_sqft ? Number(property.size_sqft).toLocaleString() : "-" }} sqft</span>
+                <span
+                  >📐
+                  {{
+                    property.size_sqft
+                      ? Number(property.size_sqft).toLocaleString()
+                      : "-"
+                  }}
+                  sqft</span
+                >
               </div>
             </div>
           </div>
@@ -564,8 +597,15 @@ const formatPrice = (price) => Number(price).toLocaleString("en-MY");
 // Simplify messy property type strings for the badge
 const simplifyType = (t) => {
   const s = (t || "").toLowerCase();
-  if (s.includes("condominium") || s.includes("service residence") || s.includes("apartment") || s.includes("flat")) return "Condo/Apt";
-  if (s.includes("terrace") || s.includes("link") || s.includes("town house")) return "Terrace";
+  if (
+    s.includes("condominium") ||
+    s.includes("service residence") ||
+    s.includes("apartment") ||
+    s.includes("flat")
+  )
+    return "Condo/Apt";
+  if (s.includes("terrace") || s.includes("link") || s.includes("town house"))
+    return "Terrace";
   if (s.includes("semi d") || s.includes("cluster")) return "Semi-D";
   if (s.includes("bungalow") || s.includes("villa")) return "Bungalow";
   return t?.split(" ").slice(0, 2).join(" ") || "Property";
@@ -574,7 +614,12 @@ const simplifyType = (t) => {
 // Different gradient per property category — makes cards visually distinct
 const cardGradient = (t) => {
   const s = (t || "").toLowerCase();
-  if (s.includes("condominium") || s.includes("apartment") || s.includes("service residence") || s.includes("flat"))
+  if (
+    s.includes("condominium") ||
+    s.includes("apartment") ||
+    s.includes("service residence") ||
+    s.includes("flat")
+  )
     return "linear-gradient(135deg, #dbeafe 0%, #ede9fe 100%)";
   if (s.includes("terrace") || s.includes("link"))
     return "linear-gradient(135deg, #dcfce7 0%, #d1fae5 100%)";
@@ -588,7 +633,13 @@ const cardGradient = (t) => {
 // Different emoji per property category
 const cardIcon = (t) => {
   const s = (t || "").toLowerCase();
-  if (s.includes("condominium") || s.includes("apartment") || s.includes("service residence") || s.includes("flat")) return "🏢";
+  if (
+    s.includes("condominium") ||
+    s.includes("apartment") ||
+    s.includes("service residence") ||
+    s.includes("flat")
+  )
+    return "🏢";
   if (s.includes("terrace") || s.includes("link")) return "🏘";
   if (s.includes("semi d") || s.includes("cluster")) return "🏡";
   if (s.includes("bungalow") || s.includes("villa")) return "🏰";

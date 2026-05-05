@@ -26,6 +26,7 @@ class ImportController extends Controller
                 foreach ($chunk as $row) {
                     if (count($row) < count($header)) {
                         $skipped++;
+
                         continue;
                     }
                     $data = array_combine($header, $row);
@@ -33,8 +34,9 @@ class ImportController extends Controller
                     // Skip rows with no price or state
                     $price = (float) ($data['Median_Price'] ?? $data['price'] ?? 0);
                     $state = trim($data['State'] ?? $data['state'] ?? '');
-                    if (!$price || !$state) {
+                    if (! $price || ! $state) {
                         $skipped++;
+
                         continue;
                     }
 
@@ -45,7 +47,7 @@ class ImportController extends Controller
                     $psf = (float) ($data['Median_PSF'] ?? $data['price_per_sqft'] ?? 0);
 
                     $batch[] = [
-                        'title' => $township ?: 'Property in ' . $state,
+                        'title' => $township ?: 'Property in '.$state,
                         'state' => $state,
                         'city' => $area ?: $state,
                         'area' => $area ?: null,
@@ -66,8 +68,9 @@ class ImportController extends Controller
                     ];
                     $imported++;
                 }
-                if (!empty($batch))
+                if (! empty($batch)) {
                     Property::insert($batch);
+                }
             }
         });
 
@@ -96,13 +99,15 @@ class ImportController extends Controller
                 foreach ($chunk as $row) {
                     if (count($row) < count($header)) {
                         $skipped++;
+
                         continue;
                     }
                     $data = array_combine($header, $row);
 
                     $state = trim($data['state'] ?? '');
-                    if (!$state) {
+                    if (! $state) {
                         $skipped++;
+
                         continue;
                     }
 
@@ -125,8 +130,9 @@ class ImportController extends Controller
                     ];
                     $imported++;
                 }
-                if (!empty($batch))
+                if (! empty($batch)) {
                     DB::table('dosm_demographics')->insert($batch);
+                }
             }
         });
 

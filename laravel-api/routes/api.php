@@ -1,5 +1,6 @@
 <?php
 
+// test pr checks
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\PropertyController;
@@ -12,7 +13,6 @@ Route::prefix('properties')->controller(PropertyController::class)->group(functi
     Route::get('/{id}', 'show');
     Route::get('/{id}/similar', 'similar');
 });
-
 
 // ── Analytics (proxied to Python) ─────────────────────────────────
 Route::prefix('analytics')->controller(AnalyticsController::class)->group(function () {
@@ -39,8 +39,8 @@ Route::prefix('import')->controller(ImportController::class)->group(function () 
 });
 
 // health check endpoint
-Route::get('/health', fn() => response()->json([
+Route::get('/health', fn () => response()->json([
     'status' => 'ok',
     'db' => DB::connection()->getPdo() ? 'connected' : 'down',
-    'timestamp' => now()
+    'timestamp' => now(),
 ]));

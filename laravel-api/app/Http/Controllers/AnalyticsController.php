@@ -9,9 +9,7 @@ class AnalyticsController extends Controller
 {
     // PythonAnalyticsService is injected automatically by Laravel
     // This is called "dependency injection" — Laravel creates the service for us
-    public function __construct(protected PythonAnalyticsService $python)
-    {
-    }
+    public function __construct(protected PythonAnalyticsService $python) {}
 
     // POST /api/analytics/predict
     public function predict(Request $request)

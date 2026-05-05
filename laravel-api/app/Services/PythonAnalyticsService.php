@@ -18,14 +18,16 @@ class PythonAnalyticsService
     // Make a GET request to Python service
     public function get(string $endpoint): array
     {
-        $response = Http::timeout(10)->get($this->baseUrl . $endpoint);
+        $response = Http::timeout(10)->get($this->baseUrl.$endpoint);
+
         return $response->json();
     }
 
     // Make a POST request to Python service
     public function post(string $endpoint, array $data): array
     {
-        $response = Http::timeout(30)->post($this->baseUrl . $endpoint, $data);
+        $response = Http::timeout(30)->post($this->baseUrl.$endpoint, $data);
+
         return $response->json();
     }
 }

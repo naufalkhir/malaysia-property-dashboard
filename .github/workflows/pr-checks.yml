@@ -1,0 +1,42 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  laravel-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v5
+
+      - name: 🎼 Install PHP dependencies
+        run: cd laravel-api && composer install --no-interaction --no-progress
+
+      - name: 🖌️ PHP Pint code style
+        run: cd laravel-api && ./vendor/bin/pint --test
+
+  python-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v5
+
+      - name: 🐍 Install Ruff
+        run: pip install ruff
+
+      - name: 🔍 Ruff lint
+        run: cd python-service && ruff check .
+
+  nuxt-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v5
+
+      - name: 📦 Install dependencies
+        run: cd nuxt-frontend && npm ci
+
+      - name: 🏗️ Nuxt build check
+        run: cd nuxt-frontend && npm run build

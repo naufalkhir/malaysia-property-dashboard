@@ -26,3 +26,7 @@ jobs:
             docker compose -f docker-compose.prod.yml exec -T laravel-api php artisan config:cache
             docker compose -f docker-compose.prod.yml exec -T laravel-api php artisan route:cache
             docker image prune -f
+            echo "Waiting for app to start..."
+            sleep 10
+            curl -f https://propertyanalytics.naufaldev.cloud/api/health
+

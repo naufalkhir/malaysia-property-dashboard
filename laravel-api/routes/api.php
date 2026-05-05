@@ -37,3 +37,10 @@ Route::prefix('import')->controller(ImportController::class)->group(function () 
     Route::post('/dosm', 'importDosm');
     Route::get('/status', 'status');
 });
+
+// health check endpoint
+Route::get('/health', fn() => response()->json([
+    'status' => 'ok',
+    'db' => DB::connection()->getPdo() ? 'connected' : 'down',
+    'timestamp' => now()
+]));

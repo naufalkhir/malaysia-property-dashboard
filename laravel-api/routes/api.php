@@ -1,5 +1,5 @@
 <?php
-
+// test pr checks
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\PropertyController;

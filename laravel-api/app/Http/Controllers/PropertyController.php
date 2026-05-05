@@ -36,7 +36,7 @@ class PropertyController extends Controller
         }
 
         // Sorting — default to newest first
-        $sortBy  = $request->input('sort_by', 'created_at');
+        $sortBy = $request->input('sort_by', 'created_at');
         $sortDir = $request->input('sort_dir', 'desc');
         $allowedSorts = ['price', 'size_sqft', 'bedrooms', 'created_at'];
 
@@ -52,6 +52,7 @@ class PropertyController extends Controller
     public function show($id)
     {
         $property = Property::findOrFail($id);
+
         return response()->json($property);
     }
 

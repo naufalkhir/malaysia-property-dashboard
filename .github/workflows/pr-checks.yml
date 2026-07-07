@@ -40,6 +40,9 @@ jobs:
             - name: 🔍 Ruff lint
               run: cd python-service && ruff check .
 
+            - name: 🧪 Pytest
+              run: cd python-service && pip install -r requirements.txt && pytest -q
+
     nuxt-checks:
         runs-on: ubuntu-latest
         steps:

@@ -19,6 +19,22 @@ class AnalyticsController extends Controller
         );
     }
 
+    // POST /api/analytics/predict/condo
+    public function predictCondo(Request $request)
+    {
+        return response()->json(
+            $this->python->post('/predict/condo', $request->all())
+        );
+    }
+
+    // GET /api/analytics/predict/info
+    public function modelInfo()
+    {
+        return response()->json(
+            $this->python->get('/predict/info')
+        );
+    }
+
     // GET /api/analytics/trends/{state}
     public function trends($state)
     {

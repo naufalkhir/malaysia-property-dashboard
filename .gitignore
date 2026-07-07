@@ -6,11 +6,34 @@ laravel-api/vendor/
 laravel-api/node_modules/
 laravel-api/.env
 
+# Python bytecode (all nested levels)
+__pycache__/
+*.py[cod]
+
 # Python
-python-service/__pycache__/
 python-service/venv/
+python-service/models/*.pkl
 python-service/*.pkl
 python-service/.env
+
+# Local-only: AI context, planning, private notes
+docs/local/
+docs/private/
+*_CONTEXT*.md
+CLAUDE_*.md
+CONTEXTv*.md
+PROJECT_CONTEXT*.md
+PROJECT_ANALYSIS.md
+PORTFOLIO*.md
+ROADMAP*.md
+Malaysia_Realty_Planning.md
+DEPLOYMENT_NOTES.md
+DATA_IMPORT_GUIDE.md
+/predictions.py
+/train_condo_model.py
+/train_model.py
+*.csv
+archive/
 
 # Nuxt
 nuxt-frontend/node_modules/

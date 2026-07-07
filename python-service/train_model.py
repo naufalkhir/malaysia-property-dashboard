@@ -8,11 +8,15 @@ Run: python train_model.py
 
 import pandas as pd
 import pickle
+import os
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error, r2_score
 from services.db import query_df
 pd.set_option('future.no_silent_downcasting', True)
+
+MODELS_DIR = os.path.join(os.path.dirname(__file__), 'models')
+os.makedirs(MODELS_DIR, exist_ok=True)
 
 
 # ── 1. Load property data ────────────────────────────────────────────────────
@@ -155,7 +159,7 @@ print(f"Training rows: {len(X):,}")
 
 # Save feature columns — predictions.py needs this to align new inputs
 feature_columns = X.columns.tolist()
-with open('model_features.pkl', 'wb') as f:
+with open(os.path.join(MODELS_DIR, 'model_features.pkl'), 'wb') as f:
     pickle.dump(feature_columns, f)
 print("Feature columns saved → model_features.pkl")
 
@@ -209,7 +213,7 @@ for _, row in importance_df.iterrows():
 
 
 # ── 10. Save model ───────────────────────────────────────────────────────────
-with open('price_model.pkl', 'wb') as f:
+with open(os.path.join(MODELS_DIR, 'price_model.pkl'), 'wb') as f:
     pickle.dump(model, f)
 print("\n✅ Model saved → price_model.pkl")
 
@@ -223,7 +227,7 @@ metadata = {
     'n_estimators': 300,
     'max_depth': 25,
 }
-with open('model_metadata.pkl', 'wb') as f:
+with open(os.path.join(MODELS_DIR, 'model_metadata.pkl'), 'wb') as f:
     pickle.dump(metadata, f)
 print("Metadata saved → model_metadata.pkl")
 print("\nDone! Restart python-service to load the new model.")

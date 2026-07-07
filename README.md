@@ -72,7 +72,9 @@ Browser
 
 **ML Price Predictor**
 
+- General model (Random Forest) or condo specialist (Gradient Boosting)
 - Inputs: state, property type, sqft, bedrooms, bathrooms
+- Condo mode: optional neighbourhood/area for finer KL estimates
 - Returns: predicted price + confidence interval (low/high range)
 - Displays model accuracy stats (MAE, R²) alongside every prediction
 
@@ -215,7 +217,8 @@ source venv/Scripts/activate   # Windows
 pip install -r requirements.txt
 cp .env.example .env
 # Edit .env: DB_DRIVER=mysql, DB credentials
-python train_model.py          # generates price_model.pkl (~176MB, gitignored)
+python train_model.py          # generates models/price_model.pkl (gitignored)
+python train_condo_model.py    # optional: models/condo_model.pkl for high-rise
 uvicorn main:app --reload --port 8001
 ```
 
@@ -237,6 +240,19 @@ php artisan tinker
 # Paste import scripts from DATA_IMPORT_GUIDE.md
 ```
 
+### Docker (all services)
+
+```bash
+# From repo root — PostgreSQL + hot reload for Laravel, Python, Nuxt
+docker compose up
+
+# Laravel: http://localhost:8000
+# Python:  http://localhost:8001
+# Nuxt:    http://localhost:3000
+```
+
+Copy `.env.example` → `.env` in `laravel-api/` and `python-service/` first, and point DB credentials at the `postgres` service (`DB_HOST=postgres` inside Docker).
+
 ---
 
 ## 🐳 Docker (Production)
@@ -250,7 +266,7 @@ docker compose -f docker-compose.prod.yml exec laravel-api php artisan migrate
 
 # Copy and run ML model (model is gitignored — copy from local or train on server)
 scp python-service/price_model.pkl root@YOUR_VPS:/tmp/price_model.pkl
-docker compose -f docker-compose.prod.yml cp /tmp/price_model.pkl python-service:/app/price_model.pkl
+docker compose -f docker-compose.prod.yml cp /tmp/price_model.pkl python-service:/app/models/price_model.pkl
 docker compose -f docker-compose.prod.yml restart python-service
 
 # Check all containers

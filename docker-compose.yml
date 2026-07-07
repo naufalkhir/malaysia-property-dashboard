@@ -1,0 +1,72 @@
+# Local development — hot reload for all services
+# Usage: docker compose up
+# Laravel: http://localhost:8000  |  Python: http://localhost:8001  |  Nuxt: http://localhost:3000
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: realty_postgres_dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: malaysia_realty
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  laravel-api:
+    build:
+      context: ./laravel-api
+      dockerfile: Dockerfile.prod
+    container_name: realty_laravel_dev
+    restart: unless-stopped
+    working_dir: /var/www/laravel
+    volumes:
+      - ./laravel-api:/var/www/laravel
+    ports:
+      - "8000:8000"
+    env_file: ./laravel-api/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: php artisan serve --host=0.0.0.0 --port=8000
+
+  python-service:
+    image: python:3.11-slim
+    container_name: realty_python_dev
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ./python-service:/app
+    ports:
+      - "8001:8001"
+    env_file: ./python-service/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      bash -c "pip install -q -r requirements.txt &&
+      uvicorn main:app --reload --host 0.0.0.0 --port 8001"
+
+  nuxt-frontend:
+    image: node:20-alpine
+    container_name: realty_nuxt_dev
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ./nuxt-frontend:/app
+    ports:
+      - "3000:3000"
+    environment:
+      NUXT_PUBLIC_API_BASE: http://localhost:8000
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+
+volumes:
+  postgres_dev_data:

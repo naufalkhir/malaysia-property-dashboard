@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "naufalkhir/malaysia-realty-analyzer",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Laravel API gateway for the Malaysia Realty Analyzer — property listings, analytics proxy, and CSV import.",
+    "keywords": ["laravel", "malaysia", "real-estate", "analytics"],
     "license": "MIT",
     "require": {
         "php": "^8.3",

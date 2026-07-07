@@ -16,6 +16,8 @@ Route::prefix('properties')->controller(PropertyController::class)->group(functi
 // ── Analytics (proxied to Python) ─────────────────────────────────
 Route::prefix('analytics')->controller(AnalyticsController::class)->group(function () {
     Route::post('/predict', 'predict');
+    Route::post('/predict/condo', 'predictCondo');
+    Route::get('/predict/info', 'modelInfo');
     Route::get('/trends/{state}', 'trends');
     Route::get('/distribution', 'distribution');
     Route::get('/affordability', 'affordability');

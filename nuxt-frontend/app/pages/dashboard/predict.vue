@@ -89,7 +89,7 @@
           ML Price Prediction
         </h1>
         <p style="color: #64748b; font-size: 1.05rem">
-          Powered by Random Forest trained on real Malaysian property data
+          Powered by Random Forest (general) or Gradient Boosting (condo specialist)
         </p>
       </div>
 
@@ -175,6 +175,66 @@
           </h2>
 
           <div style="display: flex; flex-direction: column; gap: 1.25rem">
+            <div>
+              <label
+                style="
+                  font-size: 0.8rem;
+                  font-weight: 700;
+                  color: #64748b;
+                  display: block;
+                  margin-bottom: 0.5rem;
+                  text-transform: uppercase;
+                  letter-spacing: 0.05em;
+                "
+                >Model</label
+              >
+              <select
+                v-model="form.model"
+                style="
+                  width: 100%;
+                  padding: 0.75rem;
+                  border: 1.5px solid #e2e8f0;
+                  border-radius: 0.5rem;
+                  font-size: 1rem;
+                  color: #1e293b;
+                  background: white;
+                "
+              >
+                <option value="general">General (all property types)</option>
+                <option value="condo">Condo specialist (high-rise)</option>
+              </select>
+            </div>
+
+            <div v-if="form.model === 'condo'">
+              <label
+                style="
+                  font-size: 0.8rem;
+                  font-weight: 700;
+                  color: #64748b;
+                  display: block;
+                  margin-bottom: 0.5rem;
+                  text-transform: uppercase;
+                  letter-spacing: 0.05em;
+                "
+                >Area / Neighbourhood (optional)</label
+              >
+              <input
+                v-model="form.city"
+                type="text"
+                placeholder="e.g. Mont Kiara, Cheras"
+                style="
+                  width: 100%;
+                  padding: 0.75rem;
+                  border: 1.5px solid #e2e8f0;
+                  border-radius: 0.5rem;
+                  font-size: 1rem;
+                  color: #1e293b;
+                  background: white;
+                  box-sizing: border-box;
+                "
+              />
+            </div>
+
             <div>
               <label
                 style="
@@ -513,6 +573,9 @@
                 "
               >
                 Predicted Price
+                <span v-if="result.model" style="font-weight: 600; color: #64748b">
+                  ({{ result.model === 'condo-specialist' ? 'Condo model' : 'General model' }})
+                </span>
               </div>
               <div style="font-size: 2.75rem; font-weight: 800; color: #1e293b">
                 MYR {{ Number(result.predicted_price).toLocaleString() }}
@@ -641,7 +704,9 @@ const error = ref(null);
 const loading = ref(false);
 
 const form = ref({
+  model: "general",
   state: "",
+  city: "",
   property_type: "",
   size_sqft: null,
   bedrooms: null,
@@ -670,12 +735,16 @@ const states = [
 ];
 
 const isFormValid = computed(() => {
-  return (
+  const base =
     form.value.state &&
-    form.value.property_type &&
     form.value.size_sqft > 0 &&
-    form.value.bedrooms > 0
-  );
+    form.value.bedrooms > 0;
+
+  if (form.value.model === "condo") {
+    return base;
+  }
+
+  return base && form.value.property_type;
 });
 
 const predict = async () => {
@@ -684,19 +753,36 @@ const predict = async () => {
   error.value = null;
 
   try {
-    const payload = {
-      state: form.value.state,
-      property_type: form.value.property_type,
-      size_sqft: Number(form.value.size_sqft),
-      bedrooms: Number(form.value.bedrooms),
-    };
+    const isCondo = form.value.model === "condo";
+    const endpoint = isCondo
+      ? `${apiBase}/api/analytics/predict/condo`
+      : `${apiBase}/api/analytics/predict`;
 
-    result.value = await $fetch(`${apiBase}/api/analytics/predict`, {
+    const payload = isCondo
+      ? {
+          state: form.value.state,
+          city: form.value.city || null,
+          size_sqft: Number(form.value.size_sqft),
+          bedrooms: Number(form.value.bedrooms),
+          bathrooms: form.value.bathrooms ? Number(form.value.bathrooms) : null,
+          car_parks: form.value.car_parks ? Number(form.value.car_parks) : null,
+        }
+      : {
+          state: form.value.state,
+          property_type: form.value.property_type,
+          size_sqft: Number(form.value.size_sqft),
+          bedrooms: Number(form.value.bedrooms),
+          bathrooms: form.value.bathrooms ? Number(form.value.bathrooms) : null,
+          car_parks: form.value.car_parks ? Number(form.value.car_parks) : null,
+        };
+
+    result.value = await $fetch(endpoint, {
       method: "POST",
       body: payload,
     });
   } catch (err) {
     error.value =
+      err?.data?.message ||
       err?.data?.detail ||
       "Prediction failed. Make sure the ML model is trained and running.";
   } finally {

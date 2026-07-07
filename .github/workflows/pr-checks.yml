@@ -19,8 +19,14 @@ jobs:
             - name: 🎼 Install PHP dependencies
               run: cd laravel-api && composer install --no-interaction --no-progress
 
+            - name: 🔑 Prepare testing .env
+              run: cd laravel-api && cp .env.example .env && php artisan key:generate
+
             - name: 🖌️ PHP Pint code style
               run: cd laravel-api && ./vendor/bin/pint --test
+
+            - name: 🧪 PHPUnit tests
+              run: cd laravel-api && php artisan test
 
     python-checks:
         runs-on: ubuntu-latest

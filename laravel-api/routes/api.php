@@ -1,6 +1,5 @@
 <?php
 
-// test pr checks
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\PropertyController;
@@ -32,7 +31,7 @@ Route::prefix('analytics')->controller(AnalyticsController::class)->group(functi
 });
 
 // ── Import ────────────────────────────────────────────────────────
-Route::prefix('import')->controller(ImportController::class)->group(function () {
+Route::prefix('import')->middleware('api.key')->controller(ImportController::class)->group(function () {
     Route::post('/properties', 'importProperties');
     Route::post('/dosm', 'importDosm');
     Route::get('/status', 'status');

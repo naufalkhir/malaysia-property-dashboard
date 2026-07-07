@@ -215,7 +215,7 @@ for _, row in importance_df.iterrows():
 # ── 10. Save model ───────────────────────────────────────────────────────────
 with open(os.path.join(MODELS_DIR, 'price_model.pkl'), 'wb') as f:
     pickle.dump(model, f)
-print("\n✅ Model saved → price_model.pkl")
+print("\nModel saved -> models/price_model.pkl")
 
 # Save training metadata for the prediction endpoint to display
 metadata = {

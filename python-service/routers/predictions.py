@@ -7,15 +7,23 @@ Endpoints:
   GET  /predict/info   — model metadata (R², MAE, training rows)
 """
 
+import logging
+import os
+import pickle
+import warnings
+
+import pandas as pd
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-import pandas as pd
-import pickle
-import os
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/predict", tags=["Predictions"])
 
-MODELS_DIR = os.path.join(os.path.dirname(__file__), "../models")
+ROUTERS_DIR = os.path.dirname(__file__)
+MODELS_DIR = os.path.join(ROUTERS_DIR, "../models")
+SERVICE_ROOT = os.path.join(ROUTERS_DIR, "..")
+_legacy_path_warnings: set[str] = set()
 
 
 class PredictionInput(BaseModel):
@@ -40,13 +48,36 @@ def _model_path(name: str) -> str:
     return os.path.join(MODELS_DIR, name)
 
 
-GENERAL_MODEL_PATH = _model_path("price_model.pkl")
-GENERAL_FEATURES_PATH = _model_path("model_features.pkl")
-GENERAL_META_PATH = _model_path("model_metadata.pkl")
+def _resolve_model_file(filename: str) -> str | None:
+    """
+    Canonical location: python-service/models/<file>.
+    Legacy fallback: python-service/<file> (pre-refactor layout).
+    """
+    canonical = os.path.normpath(os.path.join(MODELS_DIR, filename))
+    if os.path.exists(canonical):
+        return canonical
+
+    legacy = os.path.normpath(os.path.join(SERVICE_ROOT, filename))
+    if os.path.exists(legacy):
+        if filename not in _legacy_path_warnings:
+            _legacy_path_warnings.add(filename)
+            msg = (
+                f"Loaded {filename} from legacy path {legacy}. "
+                f"Move it to {canonical} — root-level model files are deprecated."
+            )
+            logger.warning(msg)
+            warnings.warn(msg, DeprecationWarning, stacklevel=2)
+        return legacy
+
+    return None
+
+
+GENERAL_MODEL_FILE = "price_model.pkl"
+GENERAL_FEATURES_FILE = "model_features.pkl"
+GENERAL_META_FILE = "model_metadata.pkl"
 CONDO_MODEL_PATH = _model_path("condo_model.pkl")
 CONDO_FEATURES_PATH = _model_path("condo_model_features.pkl")
 CONDO_META_PATH = _model_path("condo_model_metadata.pkl")
-INCOME_CSV_PATH = _model_path("hh_income_state.csv")
 
 general_model = None
 general_features = None
@@ -57,10 +88,20 @@ condo_meta: dict = {}
 income_dict: dict = {}
 
 
-def _load_pkl(path):
-    if os.path.exists(path):
+def _load_pkl(path: str | None):
+    if path and os.path.exists(path):
         with open(path, "rb") as f:
             return pickle.load(f)
+    return None
+
+
+def _resolve_income_csv() -> str | None:
+    for candidate in (
+        _model_path("hh_income_state.csv"),
+        os.path.normpath(os.path.join(SERVICE_ROOT, "hh_income_state.csv")),
+    ):
+        if os.path.exists(candidate):
+            return candidate
     return None
 
 
@@ -69,16 +110,17 @@ def load_resources():
     global condo_model, condo_features, condo_meta
     global income_dict
 
-    general_model = _load_pkl(GENERAL_MODEL_PATH)
-    general_features = _load_pkl(GENERAL_FEATURES_PATH)
-    general_meta = _load_pkl(GENERAL_META_PATH) or {}
+    general_model = _load_pkl(_resolve_model_file(GENERAL_MODEL_FILE))
+    general_features = _load_pkl(_resolve_model_file(GENERAL_FEATURES_FILE))
+    general_meta = _load_pkl(_resolve_model_file(GENERAL_META_FILE)) or {}
 
     condo_model = _load_pkl(CONDO_MODEL_PATH)
     condo_features = _load_pkl(CONDO_FEATURES_PATH)
     condo_meta = _load_pkl(CONDO_META_PATH) or {}
 
-    if os.path.exists(INCOME_CSV_PATH):
-        df = pd.read_csv(INCOME_CSV_PATH)
+    income_csv = _resolve_income_csv()
+    if income_csv:
+        df = pd.read_csv(income_csv)
         latest = df[df["date"] == df["date"].max()]
         income_dict = dict(zip(latest["state"], latest["income_mean"]))
     else:

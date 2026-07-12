@@ -3,6 +3,7 @@ name: Nightly Database Backup
 on:
   schedule:
     - cron: '0 2 * * *'  # 2AM UTC = 10AM MYT
+  workflow_dispatch:      # lets you trigger it manually from the Actions tab
 
 jobs:
   backup:
@@ -18,9 +19,12 @@ jobs:
           script: |
             BACKUP_FILE="/tmp/backup_$(date +%Y%m%d_%H%M%S).sql"
             docker compose -f ${{ secrets.VPS_PATH }}/docker-compose.prod.yml \
-              exec -T postgres pg_dump \
-              -U ${POSTGRES_USER} ${POSTGRES_DB} > $BACKUP_FILE
-            echo "Backup saved: $BACKUP_FILE"
+              exec -T postgres sh -c 'pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB"' > $BACKUP_FILE
+            if [ ! -s "$BACKUP_FILE" ]; then
+              echo "Backup file is empty — pg_dump likely failed" >&2
+              exit 1
+            fi
+            echo "Backup saved: $BACKUP_FILE ($(du -h $BACKUP_FILE | cut -f1))"
 
       - name: 🧹 SSH — Clean old backups
         uses: appleboy/ssh-action@v1.0.3

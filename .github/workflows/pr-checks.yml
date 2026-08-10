@@ -25,6 +25,9 @@ jobs:
             - name: 🖌️ PHP Pint code style
               run: cd laravel-api && ./vendor/bin/pint --test
 
+            - name: 🔍 Larastan static analysis
+              run: cd laravel-api && ./vendor/bin/phpstan analyse --memory-limit=512M
+
             - name: 🧪 PHPUnit tests
               run: cd laravel-api && php artisan test
 

@@ -40,8 +40,17 @@ Route::prefix('import')->middleware('api.key')->controller(ImportController::cla
 });
 
 // health check endpoint
-Route::get('/health', fn () => response()->json([
-    'status' => 'ok',
-    'db' => DB::connection()->getPdo() ? 'connected' : 'down',
-    'timestamp' => now(),
-]));
+Route::get('/health', function () {
+    try {
+        DB::connection()->getPdo();
+        $db = 'connected';
+    } catch (\Throwable $e) {
+        $db = 'down';
+    }
+
+    return response()->json([
+        'status' => 'ok',
+        'db' => $db,
+        'timestamp' => now(),
+    ]);
+});

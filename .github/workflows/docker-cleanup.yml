@@ -11,14 +11,18 @@ jobs:
 
     steps:
       - name: 🧹 SSH — Prune unused Docker build cache
-        uses: appleboy/ssh-action@v1.0.3
+        uses: Wandalen/wretry.action@v3.8.0
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script: |
-            echo "Disk usage before cleanup:"
-            docker system df
-            docker builder prune -a -f
-            echo "Disk usage after cleanup:"
-            docker system df
+          action: appleboy/ssh-action@v1.0.3
+          attempt_limit: 3
+          attempt_delay: 10000
+          with: |
+            host: ${{ secrets.VPS_HOST }}
+            username: ${{ secrets.VPS_USER }}
+            key: ${{ secrets.VPS_SSH_KEY }}
+            script: |
+              echo "Disk usage before cleanup:"
+              docker system df
+              docker builder prune -a -f
+              echo "Disk usage after cleanup:"
+              docker system df

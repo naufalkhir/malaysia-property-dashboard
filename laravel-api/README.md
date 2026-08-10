@@ -1,58 +1,82 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Malaysia Realty Analyzer — Laravel API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Laravel 13 API gateway for the [Malaysia Realty Analyzer](../README.md) — a
+full-stack property analytics platform for the Malaysian real estate market.
+This service exposes property listings and proxies analytics/ML predictions
+from the Python FastAPI microservice, so the Nuxt frontend only ever talks to
+Laravel directly.
 
-## About Laravel
+Live at [propertyanalytics.naufaldev.cloud](https://propertyanalytics.naufaldev.cloud).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Stack
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Laravel 13, PHP 8.4
+- PostgreSQL 16 (production) / MySQL (local dev)
+- Proxies to a Python FastAPI service for ML predictions, charts, and geodata
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## API Routes
 
-## Learning Laravel
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/properties` | List properties |
+| GET | `/api/properties/stats/summary` | Summary stats |
+| GET | `/api/properties/{id}` | Property details |
+| GET | `/api/properties/{id}/similar` | Similar properties |
+| POST | `/api/analytics/predict` | Price prediction (general model) |
+| POST | `/api/analytics/predict/condo` | Price prediction (condo-specialist model) |
+| GET | `/api/analytics/predict/info` | Model metadata |
+| GET | `/api/analytics/trends/{state}` | Price trends by state |
+| GET | `/api/analytics/distribution` | Price distribution |
+| GET | `/api/analytics/affordability` | Affordability analysis |
+| GET | `/api/analytics/correlation` | Feature correlation |
+| GET | `/api/analytics/demographic` | Demographic breakdown |
+| GET | `/api/analytics/map/choropleth` | Choropleth map data |
+| GET | `/api/analytics/map/heatmap` | Heatmap data |
+| GET | `/api/analytics/psf-by-state` | Price-per-sqft by state |
+| GET | `/api/analytics/type-breakdown` | Property type breakdown |
+| GET | `/api/analytics/affordability-bar` | Affordability bar chart data |
+| POST | `/api/import/properties` | Import property CSV (requires `X-API-Key`) |
+| POST | `/api/import/dosm` | Import DOSM demographic data (requires `X-API-Key`) |
+| GET | `/api/import/status` | Import status (requires `X-API-Key`) |
+| GET | `/api/health` | Health check |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+`import/*` routes are protected by `App\Http\Middleware\VerifyApiKey`, which
+checks the `X-API-Key` header against `IMPORT_API_KEY`.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Local Setup
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install
+cp .env.example .env
+php artisan key:generate
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Set `DB_CONNECTION` (sqlite for a quick start, or mysql/pgsql — see
+`.env.example`), and `PYTHON_SERVICE_URL` to point at the local Python
+service (default `http://127.0.0.1:8001`).
 
-## Contributing
+```bash
+php artisan migrate
+php artisan serve
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Or run the whole stack (server, queue listener, logs, Vite) together:
 
-## Code of Conduct
+```bash
+composer run dev
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Testing
 
-## Security Vulnerabilities
+```bash
+php artisan test
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Feature test coverage lives in `tests/Feature/` (`PropertyControllerTest`,
+`AnalyticsControllerTest`, `ImportApiKeyTest`). Wired into `pr-checks.yml` CI.
 
-## License
+## Code Style
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+./vendor/bin/pint
+```

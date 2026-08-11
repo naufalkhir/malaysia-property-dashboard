@@ -7,7 +7,7 @@ pandas==2.2.2
 scikit-learn==1.6.1
 plotly==5.22.0
 geopandas==1.0.1
-python-dotenv==1.0.1
+python-dotenv==1.2.2
 python-multipart==0.0.9
 requests==2.32.2
 numpy==2.2.0

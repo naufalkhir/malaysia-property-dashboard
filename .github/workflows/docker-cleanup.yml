@@ -20,7 +20,7 @@ jobs:
           chmod 600 ~/.ssh/id_deploy
 
       - name: 🧹 SSH — Prune unused Docker build cache
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           max_attempts: 3
           retry_wait_seconds: 10

@@ -10,50 +10,63 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: 🔑 Set up SSH key
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+        run: |
+          install -d -m 700 ~/.ssh
+          umask 077
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+
       - name: 🗄️ SSH — Backup PostgreSQL
-        uses: Wandalen/wretry.action@v3.8.0
+        uses: nick-fields/retry@v3
         with:
-          action: appleboy/ssh-action@v1.0.3
-          attempt_limit: 3
-          attempt_delay: 10000
-          with: |
-            host: ${{ secrets.VPS_HOST }}
-            username: ${{ secrets.VPS_USER }}
-            key: ${{ secrets.VPS_SSH_KEY }}
-            script: |
-              BACKUP_FILE="/tmp/backup_$(date +%Y%m%d_%H%M%S).sql"
-              docker compose -f ${{ secrets.VPS_PATH }}/docker-compose.prod.yml \
-                exec -T postgres sh -c 'pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB"' > $BACKUP_FILE
-              if [ ! -s "$BACKUP_FILE" ]; then
-                echo "Backup file is empty — pg_dump likely failed" >&2
-                exit 1
-              fi
-              echo "Backup saved: $BACKUP_FILE ($(du -h $BACKUP_FILE | cut -f1))"
+          max_attempts: 3
+          retry_wait_seconds: 10
+          timeout_minutes: 10
+          shell: bash
+          command: |
+            set -e
+            ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=30 -o BatchMode=yes \
+              -i ~/.ssh/id_deploy "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+              "VPS_PATH='${{ secrets.VPS_PATH }}' bash -s" <<'REMOTE'
+            BACKUP_FILE="/tmp/backup_$(date +%Y%m%d_%H%M%S).sql"
+            docker compose -f "$VPS_PATH/docker-compose.prod.yml" \
+              exec -T postgres sh -c 'pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB"' > "$BACKUP_FILE"
+            if [ ! -s "$BACKUP_FILE" ]; then
+              echo "Backup file is empty — pg_dump likely failed" >&2
+              exit 1
+            fi
+            echo "Backup saved: $BACKUP_FILE ($(du -h "$BACKUP_FILE" | cut -f1))"
+            REMOTE
 
       - name: 🧹 SSH — Clean old backups
-        uses: Wandalen/wretry.action@v3.8.0
+        uses: nick-fields/retry@v3
         with:
-          action: appleboy/ssh-action@v1.0.3
-          attempt_limit: 3
-          attempt_delay: 10000
-          with: |
-            host: ${{ secrets.VPS_HOST }}
-            username: ${{ secrets.VPS_USER }}
-            key: ${{ secrets.VPS_SSH_KEY }}
-            script: |
-              ls -t /tmp/backup_*.sql | tail -n +8 | xargs rm -f
-              echo "Kept last 7 backups, deleted the rest"
+          max_attempts: 3
+          retry_wait_seconds: 10
+          timeout_minutes: 5
+          shell: bash
+          command: |
+            set -e
+            ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=30 -o BatchMode=yes \
+              -i ~/.ssh/id_deploy "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" bash -s <<'REMOTE'
+            ls -t /tmp/backup_*.sql | tail -n +8 | xargs rm -f
+            echo "Kept last 7 backups, deleted the rest"
+            REMOTE
 
       - name: ✅ Confirm backup exists
-        uses: Wandalen/wretry.action@v3.8.0
+        uses: nick-fields/retry@v3
         with:
-          action: appleboy/ssh-action@v1.0.3
-          attempt_limit: 3
-          attempt_delay: 10000
-          with: |
-            host: ${{ secrets.VPS_HOST }}
-            username: ${{ secrets.VPS_USER }}
-            key: ${{ secrets.VPS_SSH_KEY }}
-            script: |
-              echo "Current backups:"
-              ls -lh /tmp/backup_*.sql
+          max_attempts: 3
+          retry_wait_seconds: 10
+          timeout_minutes: 5
+          shell: bash
+          command: |
+            set -e
+            ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=30 -o BatchMode=yes \
+              -i ~/.ssh/id_deploy "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" bash -s <<'REMOTE'
+            echo "Current backups:"
+            ls -lh /tmp/backup_*.sql
+            REMOTE

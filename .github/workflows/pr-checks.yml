@@ -55,5 +55,8 @@ jobs:
             - name: 📦 Install dependencies
               run: cd nuxt-frontend && npm ci
 
+            - name: 🔍 ESLint
+              run: cd nuxt-frontend && npm run lint
+
             - name: 🏗️ Nuxt build check
               run: cd nuxt-frontend && npm run build

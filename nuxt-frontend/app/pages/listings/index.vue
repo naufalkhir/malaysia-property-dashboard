@@ -253,7 +253,7 @@
                 color: #1e293b;
                 box-sizing: border-box;
               "
-            />
+            >
           </div>
           <div>
             <label
@@ -281,7 +281,7 @@
                 color: #1e293b;
                 box-sizing: border-box;
               "
-            />
+            >
           </div>
         </div>
         <div
@@ -293,7 +293,6 @@
           "
         >
           <button
-            @click="applyFilters"
             style="
               background: #2563eb;
               color: white;
@@ -304,11 +303,11 @@
               font-weight: 700;
               font-size: 1rem;
             "
+            @click="applyFilters"
           >
             Search
           </button>
           <button
-            @click="resetFilters"
             style="
               padding: 0.75rem 1.25rem;
               border: 1.5px solid #e2e8f0;
@@ -319,6 +318,7 @@
               color: #64748b;
               font-size: 1rem;
             "
+            @click="resetFilters"
           >
             Reset
           </button>
@@ -508,7 +508,6 @@
         "
       >
         <button
-          @click="goToPage(pagination.current_page - 1)"
           :disabled="pagination.current_page === 1"
           style="
             padding: 0.75rem 1.5rem;
@@ -520,6 +519,7 @@
             color: #475569;
             font-size: 1rem;
           "
+          @click="goToPage(pagination.current_page - 1)"
         >
           Prev
         </button>
@@ -527,7 +527,6 @@
           Page {{ pagination.current_page }} of {{ pagination.last_page }}
         </span>
         <button
-          @click="goToPage(pagination.current_page + 1)"
           :disabled="pagination.current_page === pagination.last_page"
           style="
             padding: 0.75rem 1.5rem;
@@ -539,6 +538,7 @@
             color: #475569;
             font-size: 1rem;
           "
+          @click="goToPage(pagination.current_page + 1)"
         >
           Next
         </button>

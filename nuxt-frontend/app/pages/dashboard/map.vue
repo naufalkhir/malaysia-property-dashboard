@@ -162,7 +162,7 @@
           box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
         "
       >
-        <div ref="mapContainer" style="height: 600px; width: 100%"></div>
+        <div ref="mapContainer" style="height: 600px; width: 100%"/>
       </div>
 
       <!-- State Stats -->

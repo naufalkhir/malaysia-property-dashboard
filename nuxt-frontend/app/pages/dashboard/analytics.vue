@@ -48,8 +48,8 @@
         <div class="select-wrapper">
           <select
             v-model="selectedState"
-            @change="fetchCharts"
             class="state-select"
+            @change="fetchCharts"
           >
             <option v-for="state in states" :key="state" :value="state">
               {{ state }}
@@ -57,7 +57,7 @@
           </select>
           <span class="select-arrow">▾</span>
         </div>
-        <div class="filter-divider"></div>
+        <div class="filter-divider"/>
         <div class="filter-info">
           Showing data for <strong>{{ selectedState }}</strong>
         </div>
@@ -84,12 +84,12 @@
                 <div class="card-sub">{{ selectedState }} - Avg. over time</div>
               </div>
             </div>
-            <div v-if="loadingTrend" class="skeleton-chart"></div>
+            <div v-if="loadingTrend" class="skeleton-chart"/>
             <div
               v-show="!loadingTrend"
               ref="trendChart"
               class="chart-area"
-            ></div>
+            />
           </div>
 
           <!-- Distribution -->
@@ -101,8 +101,8 @@
                 <div class="card-sub">All states - Frequency histogram</div>
               </div>
             </div>
-            <div v-if="loadingDist" class="skeleton-chart"></div>
-            <div v-show="!loadingDist" ref="distChart" class="chart-area"></div>
+            <div v-if="loadingDist" class="skeleton-chart"/>
+            <div v-show="!loadingDist" ref="distChart" class="chart-area"/>
           </div>
         </div>
 
@@ -117,8 +117,8 @@
                 <div class="card-sub">By state - Box plot spread</div>
               </div>
             </div>
-            <div v-if="loadingPsf" class="skeleton-chart"></div>
-            <div v-show="!loadingPsf" ref="psfChart" class="chart-area"></div>
+            <div v-if="loadingPsf" class="skeleton-chart"/>
+            <div v-show="!loadingPsf" ref="psfChart" class="chart-area"/>
           </div>
 
           <!-- Type Breakdown -->
@@ -130,8 +130,8 @@
                 <div class="card-sub">All states - Market share</div>
               </div>
             </div>
-            <div v-if="loadingType" class="skeleton-chart"></div>
-            <div v-show="!loadingType" ref="typeChart" class="chart-area"></div>
+            <div v-if="loadingType" class="skeleton-chart"/>
+            <div v-show="!loadingType" ref="typeChart" class="chart-area"/>
           </div>
         </div>
 
@@ -148,12 +148,12 @@
             </div>
             <div class="card-badge">All States</div>
           </div>
-          <div v-if="loadingAfford" class="skeleton-chart tall"></div>
+          <div v-if="loadingAfford" class="skeleton-chart tall"/>
           <div
             v-show="!loadingAfford"
             ref="affordChart"
             class="chart-area tall"
-          ></div>
+          />
         </div>
       </div>
     </div>

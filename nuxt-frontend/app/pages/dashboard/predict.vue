@@ -232,7 +232,7 @@
                   background: white;
                   box-sizing: border-box;
                 "
-              />
+              >
             </div>
 
             <div>
@@ -330,7 +330,7 @@
                   background: white;
                   box-sizing: border-box;
                 "
-              />
+              >
             </div>
 
             <div
@@ -366,7 +366,7 @@
                     background: white;
                     box-sizing: border-box;
                   "
-                />
+                >
               </div>
               <!-- FIX 3: Bathrooms input — added background: white -->
               <div>
@@ -398,7 +398,7 @@
                     background: white;
                     box-sizing: border-box;
                   "
-                />
+                >
               </div>
             </div>
 
@@ -469,7 +469,6 @@
             </div>
 
             <button
-              @click="predict"
               :disabled="loading || !isFormValid"
               :style="{
                 width: '100%',
@@ -484,6 +483,7 @@
                 marginTop: '0.5rem',
                 opacity: !isFormValid || loading ? '0.6' : '1',
               }"
+              @click="predict"
             >
               {{ loading ? "Predicting..." : "Predict Price" }}
             </button>
@@ -664,10 +664,6 @@
             </p>
 
             <button
-              @click="
-                result = null;
-                error = null;
-              "
               style="
                 width: 100%;
                 margin-top: 1.25rem;
@@ -679,6 +675,10 @@
                 font-weight: 600;
                 color: #64748b;
                 font-size: 0.95rem;
+              "
+              @click="
+                result = null;
+                error = null;
               "
             >
               Try Another Prediction

@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-  modules: ["@pinia/nuxt", "@nuxt/ui"],
+  modules: ["@pinia/nuxt", "@nuxt/ui", "@nuxt/eslint"],
 
   routeRules: {
     "/": { prerender: true },

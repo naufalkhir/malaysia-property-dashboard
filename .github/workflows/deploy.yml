@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v5
 
       - name: 🔌 SSH — Pull latest code
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
@@ -23,7 +23,7 @@ jobs:
             git pull origin main
 
       - name: 🐳 SSH — Build Docker images
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
@@ -33,7 +33,7 @@ jobs:
             docker compose -f docker-compose.prod.yml build
 
       - name: ⚙️ SSH — Cache config and routes
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
@@ -44,7 +44,7 @@ jobs:
             docker compose -f docker-compose.prod.yml run --rm laravel-api php artisan route:cache
 
       - name: 🗄️ SSH — Run database migrations
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
@@ -54,7 +54,7 @@ jobs:
             docker compose -f docker-compose.prod.yml run --rm laravel-api php artisan migrate --force
 
       - name: 🚀 SSH — Start containers
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}

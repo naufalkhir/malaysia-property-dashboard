@@ -116,4 +116,25 @@ class AnalyticsControllerTest extends TestCase
         $response->assertOk();
         $response->assertJson(['index' => 1.2]);
     }
+
+    public function test_recent_predictions_returns_last_ten_rows_newest_first(): void
+    {
+        foreach (range(1, 12) as $i) {
+            $log = PredictionLog::create([
+                'input_features' => ['state' => 'Selangor'],
+                'predicted_price' => 100000 + $i,
+                'model_version' => 'general',
+            ]);
+            // forceFill bypasses mass-assignment protection so each row
+            // gets a distinct, ordered created_at for a deterministic test.
+            $log->forceFill(['created_at' => now()->addMinutes($i)])->save();
+        }
+
+        $response = $this->getJson('/api/analytics/predict/recent');
+
+        $response->assertOk();
+        $response->assertJsonCount(10);
+        $response->assertJsonPath('0.predicted_price', '100012.00');
+        $response->assertJsonPath('9.predicted_price', '100003.00');
+    }
 }

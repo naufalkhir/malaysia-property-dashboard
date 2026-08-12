@@ -57,6 +57,16 @@ class AnalyticsController extends Controller
         );
     }
 
+    // GET /api/analytics/predict/recent
+    public function recentPredictions()
+    {
+        return response()->json(
+            PredictionLog::orderByDesc('created_at')
+                ->limit(10)
+                ->get(['id', 'input_features', 'predicted_price', 'model_version', 'created_at'])
+        );
+    }
+
     // GET /api/analytics/trends/{state}
     public function trends($state)
     {

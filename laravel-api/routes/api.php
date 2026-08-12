@@ -18,6 +18,7 @@ Route::prefix('analytics')->controller(AnalyticsController::class)->group(functi
     Route::post('/predict', 'predict');
     Route::post('/predict/condo', 'predictCondo');
     Route::get('/predict/info', 'modelInfo');
+    Route::get('/predict/recent', 'recentPredictions');
     Route::get('/trends/{state}', 'trends');
     Route::get('/distribution', 'distribution');
     Route::get('/affordability', 'affordability');

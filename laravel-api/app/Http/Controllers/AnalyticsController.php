@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PredictionLog;
 use App\Services\PythonAnalyticsService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class AnalyticsController extends Controller
 {
@@ -14,17 +16,37 @@ class AnalyticsController extends Controller
     // POST /api/analytics/predict
     public function predict(Request $request)
     {
-        return response()->json(
-            $this->python->post('/predict', $request->all())
-        );
+        $result = $this->python->post('/predict', $request->all());
+
+        $this->logPrediction($request->all(), $result);
+
+        return response()->json($result);
     }
 
     // POST /api/analytics/predict/condo
     public function predictCondo(Request $request)
     {
-        return response()->json(
-            $this->python->post('/predict/condo', $request->all())
-        );
+        $result = $this->python->post('/predict/condo', $request->all());
+
+        $this->logPrediction($request->all(), $result);
+
+        return response()->json($result);
+    }
+
+    // Writes a prediction_logs row. Must never throw or block the
+    // prediction response — a visitor waiting on a price estimate should
+    // never see a failure because logging failed.
+    private function logPrediction(array $inputFeatures, array $result): void
+    {
+        try {
+            PredictionLog::create([
+                'input_features' => $inputFeatures,
+                'predicted_price' => $result['predicted_price'] ?? null,
+                'model_version' => $result['model'] ?? 'v1',
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning('Failed to write prediction log: '.$e->getMessage());
+        }
     }
 
     // GET /api/analytics/predict/info

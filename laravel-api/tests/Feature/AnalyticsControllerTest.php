@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\PredictionLog;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class AnalyticsControllerTest extends TestCase
@@ -136,5 +137,30 @@ class AnalyticsControllerTest extends TestCase
         $response->assertJsonCount(10);
         $response->assertJsonPath('0.predicted_price', '100012.00');
         $response->assertJsonPath('9.predicted_price', '100003.00');
+    }
+
+    public function test_predict_still_returns_200_when_prediction_log_write_fails(): void
+    {
+        Http::fake([
+            'http://127.0.0.1:8001/predict' => Http::response([
+                'predicted_price' => 500000,
+                'low' => 425000,
+                'high' => 575000,
+                'model' => 'general',
+            ], 200),
+        ]);
+
+        // Simulate a DB failure on the logging write path.
+        Schema::drop('prediction_logs');
+
+        $response = $this->postJson('/api/analytics/predict', [
+            'state' => 'Selangor',
+            'property_type' => 'Condominium',
+            'size_sqft' => 1000,
+            'bedrooms' => 3,
+        ]);
+
+        $response->assertOk();
+        $response->assertJson(['predicted_price' => 500000, 'model' => 'general']);
     }
 }

@@ -62,6 +62,7 @@ class AnalyticsController extends Controller
     {
         return response()->json(
             PredictionLog::orderByDesc('created_at')
+                ->orderByDesc('id')
                 ->limit(10)
                 ->get(['id', 'input_features', 'predicted_price', 'model_version', 'created_at'])
         );

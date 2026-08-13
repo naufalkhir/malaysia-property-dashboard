@@ -686,12 +686,121 @@
           </div>
         </div>
       </div>
+
+      <!-- Recent Predictions -->
+      <div style="margin-top: 2.5rem">
+        <h2
+          style="
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+          "
+        >
+          Recent Predictions
+        </h2>
+        <div
+          v-if="recentPredictions.length === 0"
+          style="color: #94a3b8; font-size: 0.95rem"
+        >
+          No predictions yet — be the first!
+        </div>
+        <div
+          v-else
+          style="
+            background: white;
+            border-radius: 1rem;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+          "
+        >
+          <table style="width: 100%; border-collapse: collapse">
+            <thead>
+              <tr style="background: #f8fafc; text-align: left">
+                <th
+                  style="
+                    padding: 0.75rem 1rem;
+                    font-size: 0.75rem;
+                    color: #64748b;
+                    text-transform: uppercase;
+                  "
+                >
+                  State
+                </th>
+                <th
+                  style="
+                    padding: 0.75rem 1rem;
+                    font-size: 0.75rem;
+                    color: #64748b;
+                    text-transform: uppercase;
+                  "
+                >
+                  Model
+                </th>
+                <th
+                  style="
+                    padding: 0.75rem 1rem;
+                    font-size: 0.75rem;
+                    color: #64748b;
+                    text-transform: uppercase;
+                  "
+                >
+                  Size (sqft)
+                </th>
+                <th
+                  style="
+                    padding: 0.75rem 1rem;
+                    font-size: 0.75rem;
+                    color: #64748b;
+                    text-transform: uppercase;
+                  "
+                >
+                  Predicted Price
+                </th>
+                <th
+                  style="
+                    padding: 0.75rem 1rem;
+                    font-size: 0.75rem;
+                    color: #64748b;
+                    text-transform: uppercase;
+                  "
+                >
+                  When
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="log in recentPredictions"
+                :key="log.id"
+                style="border-top: 1px solid #f1f5f9"
+              >
+                <td style="padding: 0.75rem 1rem; color: #1e293b">
+                  {{ log.input_features?.state || "—" }}
+                </td>
+                <td style="padding: 0.75rem 1rem; color: #475569">
+                  {{ log.model_version === "condo-specialist" ? "Condo" : "General" }}
+                </td>
+                <td style="padding: 0.75rem 1rem; color: #475569">
+                  {{ log.input_features?.size_sqft || "—" }}
+                </td>
+                <td style="padding: 0.75rem 1rem; font-weight: 700; color: #1e293b">
+                  MYR {{ Number(log.predicted_price).toLocaleString() }}
+                </td>
+                <td style="padding: 0.75rem 1rem; color: #94a3b8; font-size: 0.85rem">
+                  {{ formatRelativeTime(log.created_at) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useHead, useRuntimeConfig } from "#app";
 
 useHead({ title: "Price Prediction" });
@@ -702,6 +811,27 @@ const apiBase = config.public.apiBase;
 const result = ref(null);
 const error = ref(null);
 const loading = ref(false);
+
+const recentPredictions = ref([]);
+
+const fetchRecentPredictions = async () => {
+  try {
+    recentPredictions.value = await $fetch(`${apiBase}/api/analytics/predict/recent`);
+  } catch {
+    recentPredictions.value = [];
+  }
+};
+
+const formatRelativeTime = (isoString) => {
+  const diffMin = Math.round((Date.now() - new Date(isoString).getTime()) / 60000);
+  if (diffMin < 1) return "just now";
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffHr = Math.round(diffMin / 60);
+  if (diffHr < 24) return `${diffHr}h ago`;
+  return `${Math.round(diffHr / 24)}d ago`;
+};
+
+onMounted(fetchRecentPredictions);
 
 const form = ref({
   model: "general",
@@ -780,6 +910,7 @@ const predict = async () => {
       method: "POST",
       body: payload,
     });
+    fetchRecentPredictions();
   } catch (err) {
     error.value =
       err?.data?.message ||

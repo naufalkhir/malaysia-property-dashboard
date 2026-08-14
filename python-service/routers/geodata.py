@@ -1,9 +1,11 @@
-from fastapi import APIRouter
-from services.db import query_df
-import requests
 import json
 import os
+
 import numpy as np
+import requests
+from fastapi import APIRouter
+
+from services.db import query_df
 
 router = APIRouter(prefix="/geodata", tags=["Geodata"])
 
@@ -29,7 +31,7 @@ def get_malaysia_geojson():
         with open(GEOJSON_PATH, "w") as f:
             json.dump(geojson, f)
         return geojson
-    except Exception:
+    except Exception:  # noqa: BLE001 — best-effort fetch/cache; any failure here just falls back to None
         return None
 
 

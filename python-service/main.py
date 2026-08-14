@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import stats, charts, predictions, geodata, etl
+
+from routers import charts, etl, geodata, predictions, stats
 
 # FastAPI app instance — this is the entry point for all requests
 app = FastAPI(

@@ -1,7 +1,8 @@
 import os
+
 import pandas as pd
-from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
+from sqlalchemy import create_engine, text
 
 # Load environment variables from .env file
 # This is how we keep passwords out of the code

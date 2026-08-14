@@ -6,13 +6,16 @@ After adding 54k KL rows, this should reach R² 0.75–0.85.
 Run: python train_model.py
 """
 
-import pandas as pd
-import pickle
 import os
+import pickle
+
+import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error, r2_score
+from sklearn.model_selection import train_test_split
+
 from services.db import query_df
+
 pd.set_option('future.no_silent_downcasting', True)
 
 MODELS_DIR = os.path.join(os.path.dirname(__file__), 'models')

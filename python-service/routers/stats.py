@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+
 from services.db import query_df
 
 router = APIRouter(prefix="/stats", tags=["Stats"])

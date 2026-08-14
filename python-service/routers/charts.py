@@ -1,10 +1,12 @@
-from fastapi import APIRouter
-import plotly.graph_objects as go
-import plotly.express as px
-import numpy as np  # noqa: F401 — used in affordability_bar
-import os
-from services.db import query_df
 import json
+import os
+
+import numpy as np
+import plotly.express as px
+import plotly.graph_objects as go
+from fastapi import APIRouter
+
+from services.db import query_df
 
 router = APIRouter(prefix="/charts", tags=["Charts"])
 
@@ -80,8 +82,8 @@ def price_trends(state: str):
             y=df["avg_price"],
             mode="lines+markers",
             name="Avg Price",
-            line=dict(color="#2563eb", width=2),
-            marker=dict(size=6),
+            line={"color": "#2563eb", "width": 2},
+            marker={"size": 6},
             hovertemplate="Month: %{x}<br>Avg Price: MYR %{y:,.0f}<extra></extra>",
         ))
         fig.update_layout(
@@ -90,8 +92,8 @@ def price_trends(state: str):
             yaxis_title="Average Price (MYR)",
             plot_bgcolor="white",
             paper_bgcolor="white",
-            font=dict(family="DM Sans, sans-serif"),
-            yaxis=dict(tickformat=",.0f", tickprefix="MYR "),
+            font={"family": "DM Sans, sans-serif"},
+            yaxis={"tickformat": ",.0f", "tickprefix": "MYR "},
             hovermode="x unified",
         )
 
@@ -130,9 +132,9 @@ def price_trends(state: str):
             yaxis_title="Average Price (MYR)",
             plot_bgcolor="white",
             paper_bgcolor="white",
-            font=dict(family="DM Sans, sans-serif"),
-            yaxis=dict(tickformat=",.0f", tickprefix="MYR "),
-            xaxis=dict(tickangle=-30),
+            font={"family": "DM Sans, sans-serif"},
+            yaxis={"tickformat": ",.0f", "tickprefix": "MYR "},
+            xaxis={"tickangle": -30},
         )
 
     return json.loads(fig.to_json() or '{}')
@@ -188,18 +190,18 @@ def price_distribution():
     fig.update_layout(
         plot_bgcolor="white",
         paper_bgcolor="white",
-        font=dict(family="DM Sans, sans-serif"),
-        xaxis=dict(tickformat=",.0f", tickprefix="MYR "),
+        font={"family": "DM Sans, sans-serif"},
+        xaxis={"tickformat": ",.0f", "tickprefix": "MYR "},
         yaxis_title="Number of Listings",
         bargap=0.05,
-        legend=dict(
-            title="Property Type",
-            orientation="v",
-            yanchor="top",
-            y=0.99,
-            xanchor="right",
-            x=0.99,
-        ),
+        legend={
+            "title": "Property Type",
+            "orientation": "v",
+            "yanchor": "top",
+            "y": 0.99,
+            "xanchor": "right",
+            "x": 0.99,
+        },
     )
     return json.loads(fig.to_json() or '{}')
 
@@ -242,9 +244,9 @@ def psf_by_state():
         yaxis_title="Price per Sqft (MYR)",
         plot_bgcolor="white",
         paper_bgcolor="white",
-        font=dict(family="DM Sans, sans-serif"),
+        font={"family": "DM Sans, sans-serif"},
         showlegend=False,
-        xaxis=dict(tickangle=-30),
+        xaxis={"tickangle": -30},
     )
     return json.loads(fig.to_json() or '{}')
 
@@ -286,7 +288,7 @@ def type_breakdown():
     fig = go.Figure(go.Pie(
         labels=grouped["category"],
         values=grouped["count"],
-        marker=dict(colors=colors),
+        marker={"colors": colors},
         hole=0.35,              # donut style — looks cleaner than full pie
         textinfo="label+percent",
         textposition="outside",
@@ -296,16 +298,16 @@ def type_breakdown():
         title="Property Type Breakdown (5 Categories)",
         plot_bgcolor="white",
         paper_bgcolor="white",
-        font=dict(family="DM Sans, sans-serif"),
+        font={"family": "DM Sans, sans-serif"},
         showlegend=True,
-        legend=dict(
-            orientation="v",
-            yanchor="middle",
-            y=0.5,
-            xanchor="left",
-            x=1.02,
-        ),
-        margin=dict(t=60, b=60, l=60, r=160),  # extra right margin for legend
+        legend={
+            "orientation": "v",
+            "yanchor": "middle",
+            "y": 0.5,
+            "xanchor": "left",
+            "x": 1.02,
+        },
+        margin={"t": 60, "b": 60, "l": 60, "r": 160},  # extra right margin for legend
     )
     return json.loads(fig.to_json() or '{}')
 
@@ -369,8 +371,8 @@ def affordability_bar():
         yaxis_title="Affordability Ratio (× annual income)",
         plot_bgcolor="white",
         paper_bgcolor="white",
-        font=dict(family="DM Sans, sans-serif"),
-        xaxis=dict(tickangle=-30),
+        font={"family": "DM Sans, sans-serif"},
+        xaxis={"tickangle": -30},
         showlegend=False,
     )
     return json.loads(fig.to_json() or '{}')

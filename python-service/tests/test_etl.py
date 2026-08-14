@@ -1,7 +1,6 @@
 import os
 from unittest.mock import patch
 
-import pytest
 from fastapi.testclient import TestClient
 
 os.environ.setdefault("ETL_API_KEY", "test-etl-key")

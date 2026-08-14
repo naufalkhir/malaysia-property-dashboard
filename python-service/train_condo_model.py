@@ -118,7 +118,7 @@ mae = mean_absolute_error(y_test, y_pred)
 r2 = r2_score(y_test, y_pred)
 
 print(f"\n{'='*40}")
-print(f"  Condo Model Results")
+print("  Condo Model Results")
 print(f"  MAE: MYR {mae:,.0f}")
 print(f"  R²:  {r2:.3f}")
 print(f"{'='*40}")

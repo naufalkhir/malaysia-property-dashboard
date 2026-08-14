@@ -45,7 +45,7 @@ Route::get('/health', function () {
     try {
         DB::connection()->getPdo();
         $db = 'connected';
-    } catch (\Throwable $e) {
+    } catch (Throwable $e) {
         $db = 'down';
     }
 

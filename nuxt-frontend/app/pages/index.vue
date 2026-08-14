@@ -87,10 +87,10 @@
     <section class="relative overflow-hidden bg-[#050807] px-6 py-24 text-center md:py-32">
       <!-- Aurora glow layers (pure CSS, no canvas/WebGL) -->
       <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
-        <div class="absolute h-[220px] w-[140%] rounded-full bg-emerald-500/25 blur-[90px] mix-blend-screen" />
-        <div class="absolute h-[140px] w-[90%] rounded-full bg-cyan-400/40 blur-[70px] mix-blend-screen" />
-        <div class="absolute h-[60px] w-[55%] rounded-full bg-amber-300/40 blur-[60px] mix-blend-screen" />
-        <div class="absolute h-[24px] w-[30%] rounded-full bg-white/80 blur-[40px] mix-blend-screen" />
+        <div class="aurora-layer aurora-layer-1 absolute h-[220px] w-[140%] rounded-full bg-emerald-500/25 blur-[90px] mix-blend-screen" />
+        <div class="aurora-layer aurora-layer-2 absolute h-[140px] w-[90%] rounded-full bg-cyan-400/40 blur-[70px] mix-blend-screen" />
+        <div class="aurora-layer aurora-layer-3 absolute h-[60px] w-[55%] rounded-full bg-amber-300/40 blur-[60px] mix-blend-screen" />
+        <div class="aurora-layer aurora-layer-4 absolute h-[24px] w-[30%] rounded-full bg-white/80 blur-[40px] mix-blend-screen" />
       </div>
 
       <div class="relative z-10 mx-auto max-w-3xl">
@@ -99,7 +99,7 @@
           :delay="120"
           animate-by="words"
           direction="top"
-          class="mb-6 justify-center text-4xl font-extrabold leading-tight text-white md:text-5xl"
+          class="hero-headline mb-6 justify-center text-4xl font-extrabold leading-tight text-white md:text-5xl"
         />
         <p class="mb-10 text-lg leading-relaxed text-slate-300">
           Explore real Malaysian property listings with affordability analysis,
@@ -275,3 +275,67 @@
     </footer>
   </div>
 </template>
+
+<style scoped>
+/* Aurora glow layers drift slowly so the hero background never sits still */
+@keyframes aurora-drift {
+  0%,
+  100% {
+    transform: translate(-3%, -2%) scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translate(3%, 2%) scale(1.1);
+    opacity: 1;
+  }
+}
+
+.aurora-layer {
+  animation: aurora-drift 10s ease-in-out infinite;
+}
+
+.aurora-layer-1 {
+  animation-duration: 12s;
+}
+
+.aurora-layer-2 {
+  animation-duration: 9s;
+  animation-delay: -3s;
+}
+
+.aurora-layer-3 {
+  animation-duration: 7s;
+  animation-delay: -1.5s;
+}
+
+.aurora-layer-4 {
+  animation-duration: 6s;
+  animation-delay: -4s;
+}
+
+/* Headline keeps a soft glow pulse going after BlurText's one-time entrance */
+@keyframes hero-headline-glow {
+  0%,
+  100% {
+    color: #ffffff;
+    text-shadow: 0 0 20px rgba(45, 212, 191, 0.35);
+  }
+  50% {
+    color: #ecfeff;
+    text-shadow: 0 0 28px rgba(251, 191, 36, 0.4);
+  }
+}
+
+/* :deep() note: Vue scoped styles already reach a child component's root
+   node (BlurText's <p>) without :deep() — this rule targets that root. */
+.hero-headline {
+  animation: hero-headline-glow 5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-layer,
+  .hero-headline {
+    animation: none;
+  }
+}
+</style>

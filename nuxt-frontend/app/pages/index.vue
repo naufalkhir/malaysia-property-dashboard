@@ -84,57 +84,34 @@
     </nav>
 
     <!-- Hero -->
-    <section
-      style="
-        background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-        padding: 6rem 1.5rem;
-        text-align: center;
-      "
-    >
-      <div style="max-width: 800px; margin: 0 auto">
-        <h1
-          style="
-            font-size: 3.5rem;
-            font-weight: 800;
-            color: white;
-            margin-bottom: 1.5rem;
-            line-height: 1.2;
-          "
-        >
-          Malaysia Property Analytics
-        </h1>
-        <p
-          style="
-            font-size: 1.25rem;
-            color: #bfdbfe;
-            margin-bottom: 2.5rem;
-            line-height: 1.7;
-          "
-        >
+    <section class="relative overflow-hidden bg-[#050807] px-6 py-24 text-center md:py-32">
+      <!-- Aurora glow layers (pure CSS, no canvas/WebGL) -->
+      <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <div class="absolute h-[220px] w-[140%] rounded-full bg-emerald-500/25 blur-[90px] mix-blend-screen" />
+        <div class="absolute h-[140px] w-[90%] rounded-full bg-cyan-400/40 blur-[70px] mix-blend-screen" />
+        <div class="absolute h-[60px] w-[55%] rounded-full bg-amber-300/40 blur-[60px] mix-blend-screen" />
+        <div class="absolute h-[24px] w-[30%] rounded-full bg-white/80 blur-[40px] mix-blend-screen" />
+      </div>
+
+      <div class="relative z-10 mx-auto max-w-3xl">
+        <BlurText
+          text="Malaysia Property Analytics"
+          :delay="120"
+          animate-by="words"
+          direction="top"
+          class="mb-6 justify-center text-4xl font-extrabold leading-tight text-white md:text-5xl"
+        />
+        <p class="mb-10 text-lg leading-relaxed text-slate-300">
           Explore real Malaysian property listings with affordability analysis,
           interactive maps, and ML-powered price predictions.
         </p>
-        <div
-          style="
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-          "
-        >
+        <div class="flex flex-wrap justify-center gap-4">
           <NuxtLink to="/listings" class="btn-primary">
             Browse Listings →
           </NuxtLink>
           <NuxtLink
             to="/dashboard"
-            style="
-              padding: 0.75rem 1.5rem;
-              border: 2px solid white;
-              border-radius: 0.5rem;
-              color: white;
-              text-decoration: none;
-              font-weight: 600;
-            "
+            class="rounded-lg border-2 border-white px-6 py-3 font-semibold text-white no-underline"
           >
             View Analytics
           </NuxtLink>

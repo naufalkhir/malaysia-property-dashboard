@@ -287,6 +287,30 @@ docker compose -f docker-compose.prod.yml ps
 
 ---
 
+## 🔒 Security
+
+| Layer | What's in place |
+| --- | --- |
+| Input validation | Laravel Form Requests on every public write/query surface — `PredictRequest`, `PredictCondoRequest` (state restricted to the 16 real Malaysian states/territories, numeric ranges on size/bedrooms/bathrooms/car parks), `PropertyIndexRequest` (typed + range-checked filters, allowlisted `sort_by`/`sort_dir`) |
+| Auth on sensitive routes | Shared-secret `X-API-Key` header guards `import/*` (Laravel) and `POST /etl/clean/properties` (Python) |
+| Mass assignment | Every Eloquent model declares an explicit `$fillable`; log/import writes build from named fields, never `$request->all()` |
+| SQL injection | Eloquent query builder throughout — no raw string concatenation in queries |
+| Rate limiting | Nginx: 30 req/min general API, 10 req/min on `/predict` |
+| Transport security | HTTPS via Let's Encrypt/Certbot with HTTP→HTTPS redirect, HSTS |
+| Response headers | `Content-Security-Policy` (scoped to the actual third-party origins the frontend loads — unpkg, Plotly CDN, OSM/ArcGIS tiles, Google Fonts), `X-Frame-Options`, `X-Content-Type-Options`, `X-XSS-Protection`, `Referrer-Policy` |
+| File uploads | CSV import restricted to `csv`/`txt` mime types, 10 MB max |
+| Error handling | `APP_DEBUG=false` in production — no stack traces in API responses |
+| Secrets | `.env` files gitignored across all three services, never committed; CI/CD secrets live in GitHub Actions |
+| Dependency scanning | Dependabot enabled (npm, composer, pip, GitHub Actions), weekly |
+| Server access | VPS SSH hardened — fail2ban on sshd, UFW rate-limited on port 22, key-only auth |
+
+No user accounts or sessions exist in this app (no login, no PII collection), so
+patterns like RLS, password hashing, and per-user authorization don't apply —
+the shared-secret header above is the actual trust boundary for the few
+write-capable endpoints.
+
+---
+
 ## 🗂️ Project Structure
 
 ```

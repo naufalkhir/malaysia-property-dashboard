@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PredictCondoRequest;
+use App\Http\Requests\PredictRequest;
 use App\Models\PredictionLog;
 use App\Services\PythonAnalyticsService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class AnalyticsController extends Controller
@@ -14,21 +15,21 @@ class AnalyticsController extends Controller
     public function __construct(protected PythonAnalyticsService $python) {}
 
     // POST /api/analytics/predict
-    public function predict(Request $request)
+    public function predict(PredictRequest $request)
     {
-        $result = $this->python->post('/predict', $request->all());
+        $result = $this->python->post('/predict', $request->validated());
 
-        $this->logPrediction($request->all(), $result);
+        $this->logPrediction($request->validated(), $result);
 
         return response()->json($result);
     }
 
     // POST /api/analytics/predict/condo
-    public function predictCondo(Request $request)
+    public function predictCondo(PredictCondoRequest $request)
     {
-        $result = $this->python->post('/predict/condo', $request->all());
+        $result = $this->python->post('/predict/condo', $request->validated());
 
-        $this->logPrediction($request->all(), $result);
+        $this->logPrediction($request->validated(), $result);
 
         return response()->json($result);
     }

@@ -11,7 +11,7 @@ class ImportController extends Controller
     // POST /api/import/properties — upload Kaggle CSV
     public function importProperties(Request $request)
     {
-        $request->validate(['file' => 'required|file|mimes:csv,txt']);
+        $request->validate(['file' => 'required|file|mimes:csv,txt|max:10240']);
 
         $file = $request->file('file');
         $rows = array_map('str_getcsv', file($file->getRealPath()));
@@ -84,7 +84,7 @@ class ImportController extends Controller
     // POST /api/import/dosm — upload DOSM demographics CSV
     public function importDosm(Request $request)
     {
-        $request->validate(['file' => 'required|file|mimes:csv,txt']);
+        $request->validate(['file' => 'required|file|mimes:csv,txt|max:10240']);
 
         $file = $request->file('file');
         $rows = array_map('str_getcsv', file($file->getRealPath()));

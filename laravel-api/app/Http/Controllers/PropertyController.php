@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PropertyIndexRequest;
 use App\Models\Property;
-use Illuminate\Http\Request;
 
 class PropertyController extends Controller
 {
     // GET /api/properties — listing with filters + pagination
-    public function index(Request $request)
+    public function index(PropertyIndexRequest $request)
     {
         $query = Property::query();
 
@@ -35,14 +35,11 @@ class PropertyController extends Controller
             $query->where('price', '<=', $request->max_price);
         }
 
-        // Sorting — default to newest first
+        // Sorting — default to newest first — sort_by/sort_dir already
+        // restricted to a safe allowlist by PropertyIndexRequest::rules()
         $sortBy = $request->input('sort_by', 'created_at');
         $sortDir = $request->input('sort_dir', 'desc');
-        $allowedSorts = ['price', 'size_sqft', 'bedrooms', 'created_at'];
-
-        if (in_array($sortBy, $allowedSorts)) {
-            $query->orderBy($sortBy, $sortDir);
-        }
+        $query->orderBy($sortBy, $sortDir);
 
         // Paginate — 20 per page
         return response()->json($query->paginate(20));
